@@ -4,112 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>民謡カセット</title>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-    background: #1a1228;
-    color: #e0d8cc;
+    font-family: 'Klee One', 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: #fff;
+    color: #2a1a10;
     min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 48px;
+    padding: 32px 16px 64px;
   }
 
   /* ---- ヘッダー ---- */
   header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
   }
   header h1 {
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    letter-spacing: 0.25em;
-    color: #f0e0b8;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 600;
+    color: #2a1a10;
+    letter-spacing: 0.2em;
   }
   header p {
     margin-top: 6px;
-    font-size: 0.8rem;
-    color: #8a7a6a;
+    font-size: 0.82rem;
+    color: #a08060;
     letter-spacing: 0.15em;
   }
 
-  /* ---- カセットテープ ---- */
-  .cassette {
-    width: min(340px, 92vw);
-    height: 200px;
+  /* ---- カセットグリッド ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 32px 24px;
+    max-width: 900px;
+    margin: 0 auto 40px;
+  }
+
+  /* ---- カセットカード ---- */
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .cassette-body {
+    width: 180px;
+    height: 110px;
     background: linear-gradient(160deg, #3a2718 0%, #2a1a10 100%);
-    border-radius: 14px;
-    border: 2px solid #6a4a32;
+    border-radius: 9px;
+    border: 1.5px solid #6a4a32;
     position: relative;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
-    margin: 0 auto;
+    box-shadow: 0 4px 16px rgba(80,40,10,0.15);
+    flex-shrink: 0;
   }
 
   /* ラベル */
   .cassette-label {
     position: absolute;
-    top: 14px;
-    left: 22px;
-    right: 22px;
-    height: 76px;
-    background: linear-gradient(135deg, #f0e4c4 0%, #d8c89a 100%);
-    border-radius: 6px;
+    top: 8px; left: 11px; right: 11px;
+    height: 44px;
+    background: linear-gradient(135deg, #f5e8c0 0%, #e0cc88 100%);
+    border-radius: 4px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    padding: 4px 8px;
   }
   .cassette-label::before,
   .cassette-label::after {
     content: '';
     position: absolute;
     left: 0; right: 0;
-    height: 4px;
+    height: 3px;
     background: repeating-linear-gradient(
-      90deg,
-      #b89a60 0, #b89a60 5px,
-      transparent 5px, transparent 10px
+      90deg, #b89a50 0, #b89a50 4px, transparent 4px, transparent 8px
     );
   }
   .cassette-label::before { top: 0; }
   .cassette-label::after  { bottom: 0; }
 
-  .label-title {
-    font-size: 1.05rem;
-    font-weight: 700;
+  .label-text {
+    font-size: 0.72rem;
+    font-weight: 600;
     color: #2a1a10;
-    letter-spacing: 0.2em;
-  }
-  .label-sub {
-    font-size: 0.65rem;
-    color: #7a5a30;
-    letter-spacing: 0.18em;
-    margin-top: 4px;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 100%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   /* リール部 */
   .reel-area {
     position: absolute;
-    bottom: 14px;
+    bottom: 8px;
     left: 0; right: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 12px;
     gap: 0;
-    padding: 0 20px;
   }
 
   .reel {
-    width: 68px;
-    height: 68px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background:
       radial-gradient(circle at 50% 50%, #888 0%, #555 18%, transparent 18%),
-      conic-gradient(#4a4a4a 0deg, #666 60deg, #4a4a4a 120deg, #666 180deg, #4a4a4a 240deg, #666 300deg, #4a4a4a 360deg);
-    border: 3px solid #777;
+      conic-gradient(#4a4a4a 0deg,#666 60deg,#4a4a4a 120deg,#666 180deg,#4a4a4a 240deg,#666 300deg,#4a4a4a 360deg);
+    border: 2px solid #777;
     flex-shrink: 0;
     position: relative;
   }
@@ -118,143 +128,232 @@
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, transparent 26%, rgba(0,0,0,0.35) 26%);
+    background: radial-gradient(circle at 50% 50%, transparent 26%, rgba(0,0,0,0.3) 26%);
   }
+  .reel.spinning { animation: spin 1.4s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .reel.spinning {
-    animation: spin 1.6s linear infinite;
-  }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  /* テープ窓 */
   .tape-window {
     flex: 1;
-    max-width: 88px;
-    height: 34px;
+    max-width: 52px;
+    height: 20px;
     background: #0e0a06;
-    border: 2px solid #555;
-    border-radius: 5px;
+    border: 1.5px solid #555;
+    border-radius: 3px;
     position: relative;
-    margin: 0 6px;
-    overflow: hidden;
+    margin: 0 4px;
   }
-  .tape-line {
+  .tape-window::after {
+    content: '';
     position: absolute;
     top: 50%; left: 0; right: 0;
-    height: 3px;
+    height: 2px;
     background: #7a4a20;
     transform: translateY(-50%);
   }
 
-  /* 角の切り欠き */
+  /* 切り欠き */
   .notch {
     position: absolute;
     bottom: 0;
-    width: 18px; height: 18px;
-    background: #1a1228;
-    border-radius: 0 10px 0 0;
+    width: 12px; height: 12px;
+    background: #fff;
+    border-radius: 0 7px 0 0;
   }
   .notch.left  { left: 0; }
-  .notch.right { right: 0; border-radius: 10px 0 0 0; }
+  .notch.right { right: 0; border-radius: 7px 0 0 0; }
 
-  /* ---- コントロール ---- */
-  .controls {
-    display: flex;
-    gap: 20px;
-    margin: 24px auto 0;
-    justify-content: center;
+  /* カードのタイトルと再生ボタン */
+  .card-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #2a1a10;
+    text-align: center;
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
-  .ctrl-btn {
-    width: 56px; height: 56px;
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .play-btn {
+    width: 40px; height: 40px;
     border-radius: 50%;
-    border: 2px solid #c89a50;
+    border: 2px solid #c8853a;
     background: transparent;
-    color: #c89a50;
-    font-size: 1.4rem;
+    color: #c8853a;
+    font-size: 1rem;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s, color 0.2s, transform 0.1s;
+    transition: background 0.2s, color 0.2s;
+    font-family: inherit;
   }
-  .ctrl-btn:hover { background: #c89a50; color: #1a1228; }
-  .ctrl-btn:active { transform: scale(0.93); }
-  .ctrl-btn.playing { background: #c89a50; color: #1a1228; }
+  .play-btn:hover { background: #c8853a; color: #fff; }
+  .play-btn.active { background: #c8853a; color: #fff; }
 
-  /* ---- YouTube プレイヤー ---- */
-  .player-wrap {
-    width: min(640px, 100%);
-    margin: 28px auto 0;
+  .del-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #ddd;
+    background: transparent;
+    color: #bbb;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: inherit;
+  }
+  .del-btn:hover { border-color: #e06050; color: #e06050; }
+
+  /* ---- 追加ボタン ---- */
+  .add-wrap {
+    max-width: 900px;
+    margin: 0 auto 32px;
+    text-align: center;
+  }
+
+  .add-toggle-btn {
+    padding: 10px 28px;
+    border: 2px dashed #c8a870;
+    border-radius: 50px;
+    background: transparent;
+    color: #a07840;
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .add-toggle-btn:hover { background: #fdf5e8; color: #7a5820; }
+
+  /* ---- 追加フォーム ---- */
+  .add-form {
+    max-width: 480px;
+    margin: 16px auto 0;
+    background: #fdf8f0;
+    border: 1px solid #e8d5b0;
+    border-radius: 12px;
+    padding: 20px;
     display: none;
   }
-  .player-wrap.visible { display: block; }
-  .player-wrap iframe {
+  .add-form.open { display: block; }
+
+  .add-form label {
+    display: block;
+    font-size: 0.8rem;
+    color: #8a6040;
+    margin-bottom: 5px;
+    margin-top: 12px;
+  }
+  .add-form label:first-of-type { margin-top: 0; }
+
+  .add-form input[type="text"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid #e0c898;
+    border-radius: 6px;
+    background: #fff;
+    color: #2a1a10;
+    font-size: 0.9rem;
+    font-family: inherit;
+  }
+  .add-form input[type="text"]:focus {
+    outline: none;
+    border-color: #c8853a;
+  }
+
+  .form-btns {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .btn-primary {
+    padding: 9px 24px;
+    background: #c8853a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-cancel {
+    padding: 9px 20px;
+    background: transparent;
+    color: #a08060;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .form-error {
+    font-size: 0.8rem;
+    color: #c04040;
+    margin-top: 8px;
+    min-height: 1.2em;
+  }
+
+  /* ---- プレイヤー ---- */
+  .player-section {
+    max-width: 720px;
+    margin: 0 auto;
+    display: none;
+  }
+  .player-section.visible { display: block; }
+
+  .player-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .player-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2a1a10;
+    flex: 1;
+  }
+  .close-btn {
+    padding: 4px 14px;
+    border: 1px solid #ddd;
+    background: transparent;
+    color: #a08060;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .player-section iframe {
     width: 100%;
     aspect-ratio: 16 / 9;
     border: none;
     border-radius: 10px;
     display: block;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
 
-  /* ---- プレイリスト入力欄 ---- */
-  .playlist-form {
-    margin-top: 28px;
-    width: min(480px, 100%);
-    background: #110e1a;
-    border: 1px solid #3a2a1a;
-    border-radius: 12px;
-    padding: 20px;
+  /* 空メッセージ */
+  .empty-msg {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #b0906a;
+    font-size: 0.9rem;
+    padding: 32px 0;
   }
-  .playlist-form label {
-    display: block;
-    font-size: 0.8rem;
-    color: #9a8a70;
-    margin-bottom: 8px;
-    letter-spacing: 0.05em;
-  }
-  .input-row {
-    display: flex;
-    gap: 8px;
-  }
-  .playlist-form input[type="text"] {
-    flex: 1;
-    padding: 9px 12px;
-    border-radius: 6px;
-    border: 1px solid #3a2a1a;
-    background: #1e1828;
-    color: #e0d8cc;
-    font-size: 0.88rem;
-    font-family: monospace;
-    min-width: 0;
-  }
-  .playlist-form input[type="text"]:focus {
-    outline: none;
-    border-color: #c89a50;
-  }
-  .save-btn {
-    padding: 9px 18px;
-    background: #c89a50;
-    color: #1a1228;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.88rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    white-space: nowrap;
-    transition: opacity 0.2s;
-    flex-shrink: 0;
-  }
-  .save-btn:hover { opacity: 0.85; }
-
-  .status-msg {
-    font-size: 0.8rem;
-    margin-top: 8px;
-    min-height: 1.2em;
-  }
-  .status-msg.ok    { color: #80c870; }
-  .status-msg.ready { color: #9a8a70; }
 </style>
 </head>
 <body>
@@ -264,112 +363,163 @@
   <p>JAPANESE FOLK SONGS</p>
 </header>
 
-<div class="cassette">
-  <div class="cassette-label">
-    <div class="label-title">日本の民謡</div>
-    <div class="label-sub">TAPE A</div>
-  </div>
-  <div class="reel-area">
-    <div class="reel" id="reel-l"></div>
-    <div class="tape-window">
-      <div class="tape-line"></div>
+<div class="grid" id="cassette-grid"></div>
+
+<div class="add-wrap">
+  <button class="add-toggle-btn" onclick="toggleForm()">＋ カセットを追加する</button>
+  <div class="add-form" id="add-form">
+    <label for="new-title">タイトル</label>
+    <input type="text" id="new-title" placeholder="例：津軽じょんがら節">
+    <label for="new-url">YouTube URL</label>
+    <input type="text" id="new-url" placeholder="https://youtu.be/XXXXX または playlist?list=XXXXX">
+    <div class="form-error" id="form-error"></div>
+    <div class="form-btns">
+      <button class="btn-primary" onclick="addCassette()">追加する</button>
+      <button class="btn-cancel" onclick="toggleForm()">キャンセル</button>
     </div>
-    <div class="reel" id="reel-r"></div>
   </div>
-  <div class="notch left"></div>
-  <div class="notch right"></div>
 </div>
 
-<div class="controls">
-  <button class="ctrl-btn" id="play-btn" onclick="togglePlay()" title="再生 / 一時停止">&#9654;</button>
-</div>
-
-<div class="player-wrap" id="player-wrap">
+<div class="player-section" id="player-section">
+  <div class="player-header">
+    <h2 id="player-title"></h2>
+    <button class="close-btn" onclick="stopPlay()">閉じる</button>
+  </div>
   <iframe id="yt-frame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
 </div>
 
-<div class="playlist-form">
-  <label for="url-input">YouTube プレイリスト URL</label>
-  <div class="input-row">
-    <input type="text" id="url-input"
-      placeholder="https://www.youtube.com/playlist?list=XXXXXXXX">
-    <button class="save-btn" onclick="saveUrl()">保存する</button>
-  </div>
-  <div class="status-msg" id="status-msg"></div>
-</div>
-
 <script>
-  const STORAGE_KEY = 'minyou_url';
-  const DEFAULT_URL = 'https://youtu.be/E_Fhr2FRjHM?si=V8TXJbjHAjqmdjxi';
-  let playing = false;
+  const STORAGE_KEY = 'minyou_cassettes_v2';
 
-  function getEmbedSrc(raw) {
-    if (!raw) return null;
-    // プレイリスト: ?list=XXXX
+  function load() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || [
+      { id: 1, title: '民謡', url: 'https://youtu.be/E_Fhr2FRjHM?si=V8TXJbjHAjqmdjxi' }
+    ];
+  }
+
+  function save(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function embedSrc(raw) {
     const listM = raw.match(/[?&]list=([^&\s]+)/);
     if (listM) return 'https://www.youtube.com/embed/videoseries?list=' + listM[1] + '&autoplay=1';
-    // youtu.be/VIDEO_ID
     const shortM = raw.match(/youtu\.be\/([^?&\s]+)/);
     if (shortM) return 'https://www.youtube.com/embed/' + shortM[1] + '?autoplay=1';
-    // youtube.com/watch?v=VIDEO_ID
     const watchM = raw.match(/[?&]v=([^&\s]+)/);
     if (watchM) return 'https://www.youtube.com/embed/' + watchM[1] + '?autoplay=1';
     return null;
   }
 
-  function setStatus(text, cls) {
-    const el = document.getElementById('status-msg');
-    el.textContent = text;
-    el.className = 'status-msg ' + cls;
-  }
+  let currentId = null;
 
-  function togglePlay() {
-    const raw  = localStorage.getItem(STORAGE_KEY) || DEFAULT_URL;
-    const src  = getEmbedSrc(raw);
-    const btn   = document.getElementById('play-btn');
-    const wrap  = document.getElementById('player-wrap');
-    const frame = document.getElementById('yt-frame');
-    const reelL = document.getElementById('reel-l');
-    const reelR = document.getElementById('reel-r');
+  function render() {
+    const list = load();
+    const grid = document.getElementById('cassette-grid');
+    grid.innerHTML = '';
 
-    if (!src) {
-      setStatus('有効な YouTube URL を入力して「保存する」を押してください', 'ready');
-      document.getElementById('url-input').focus();
+    if (list.length === 0) {
+      grid.innerHTML = '<div class="empty-msg">カセットがまだありません。下の「追加する」から登録してください。</div>';
       return;
     }
 
-    if (!playing) {
-      frame.src = src;
-      wrap.classList.add('visible');
-      btn.innerHTML = '&#9646;&#9646;';
-      btn.classList.add('playing');
-      reelL.classList.add('spinning');
-      reelR.classList.add('spinning');
-      playing = true;
-    } else {
-      frame.src = '';
-      wrap.classList.remove('visible');
-      btn.innerHTML = '&#9654;';
-      btn.classList.remove('playing');
-      reelL.classList.remove('spinning');
-      reelR.classList.remove('spinning');
-      playing = false;
+    list.forEach(item => {
+      const isActive = item.id === currentId;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="cassette-body">
+          <div class="cassette-label">
+            <div class="label-text">${esc(item.title)}</div>
+          </div>
+          <div class="reel-area">
+            <div class="reel${isActive ? ' spinning' : ''}" id="reel-l-${item.id}"></div>
+            <div class="tape-window"></div>
+            <div class="reel${isActive ? ' spinning' : ''}" id="reel-r-${item.id}"></div>
+          </div>
+          <div class="notch left"></div>
+          <div class="notch right"></div>
+        </div>
+        <div class="card-title">${esc(item.title)}</div>
+        <div class="card-actions">
+          <button class="play-btn${isActive ? ' active' : ''}" onclick="togglePlay(${item.id})" title="再生 / 停止">
+            ${isActive ? '&#9646;&#9646;' : '&#9654;'}
+          </button>
+          <button class="del-btn" onclick="deleteCassette(${item.id})" title="削除">✕</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function esc(str) {
+    return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function togglePlay(id) {
+    if (currentId === id) { stopPlay(); return; }
+
+    const list = load();
+    const item = list.find(c => c.id === id);
+    if (!item) return;
+
+    const src = embedSrc(item.url);
+    if (!src) return;
+
+    currentId = id;
+    document.getElementById('yt-frame').src = src;
+    document.getElementById('player-title').textContent = item.title;
+    document.getElementById('player-section').classList.add('visible');
+    document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    render();
+  }
+
+  function stopPlay() {
+    currentId = null;
+    document.getElementById('yt-frame').src = '';
+    document.getElementById('player-section').classList.remove('visible');
+    render();
+  }
+
+  function deleteCassette(id) {
+    if (!confirm('このカセットを削除しますか？')) return;
+    if (currentId === id) stopPlay();
+    const list = load().filter(c => c.id !== id);
+    save(list);
+    render();
+  }
+
+  function toggleForm() {
+    const form = document.getElementById('add-form');
+    form.classList.toggle('open');
+    document.getElementById('form-error').textContent = '';
+    if (form.classList.contains('open')) {
+      document.getElementById('new-title').focus();
     }
   }
 
-  function saveUrl() {
-    const val = document.getElementById('url-input').value.trim();
-    if (!val) { setStatus('URL を入力してください', 'ready'); return; }
-    if (!getEmbedSrc(val)) { setStatus('有効な YouTube URL を貼り付けてください', 'ready'); return; }
-    localStorage.setItem(STORAGE_KEY, val);
-    setStatus('保存しました。▶ で再生できます', 'ok');
+  function addCassette() {
+    const title = document.getElementById('new-title').value.trim();
+    const url   = document.getElementById('new-url').value.trim();
+    const errEl = document.getElementById('form-error');
+
+    if (!title) { errEl.textContent = 'タイトルを入力してください'; return; }
+    if (!url)   { errEl.textContent = 'URLを入力してください'; return; }
+    if (!embedSrc(url)) { errEl.textContent = '有効なYouTube URLを入力してください'; return; }
+
+    const list = load();
+    const newId = Date.now();
+    list.push({ id: newId, title, url });
+    save(list);
+
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-url').value = '';
+    errEl.textContent = '';
+    document.getElementById('add-form').classList.remove('open');
+    render();
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem(STORAGE_KEY) || DEFAULT_URL;
-    document.getElementById('url-input').value = saved;
-    setStatus('▶ ボタンを押すと再生されます', 'ready');
-  });
+  render();
 </script>
 </body>
 </html>
