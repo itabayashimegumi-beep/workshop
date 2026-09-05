@@ -473,10 +473,13 @@
 <div class="overlay" id="overlay">
   <div class="dialog">
     <h2>カセットを追加する</h2>
-    <label for="d-title">タイトル</label>
-    <input type="text" id="d-title" placeholder="例：津軽じょんがら節">
     <label for="d-url">YouTube URL</label>
     <input type="text" id="d-url" placeholder="https://youtu.be/XXXXX">
+    <label for="d-title" style="display:flex;align-items:baseline;gap:8px;">
+      タイトル
+      <span style="font-size:0.75rem;font-weight:400;color:#a08060;">タイトルは自動取得されます</span>
+    </label>
+    <input type="text" id="d-title" placeholder="例：津軽じょんがら節">
     <div class="d-error" id="d-error"></div>
     <div class="d-btns">
       <button class="d-ok" onclick="addCassette()">追加する</button>
@@ -687,8 +690,8 @@ function addCassette() {
   renderShelf();
 }
 
-document.getElementById('d-url').addEventListener('keydown', e => { if (e.key === 'Enter') addCassette(); });
-document.getElementById('d-title').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('d-url').focus(); });
+document.getElementById('d-url').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('d-title').focus(); });
+document.getElementById('d-title').addEventListener('keydown', e => { if (e.key === 'Enter') addCassette(); });
 document.getElementById('overlay').addEventListener('click', function(e) { if (e.target === this) closeDialog(); });
 
 // URL 入力でタイトルを自動取得
