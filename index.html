@@ -197,50 +197,28 @@
     display: block;
   }
 
-  /* ---- 未設定メッセージ ---- */
-  .no-playlist {
-    margin-top: 24px;
-    font-size: 0.85rem;
-    color: #a07850;
-    text-align: center;
-    display: none;
-  }
-
-  /* ---- 設定パネル ---- */
-  .settings {
-    margin-top: 36px;
+  /* ---- プレイリスト入力欄 ---- */
+  .playlist-form {
+    margin-top: 28px;
     width: min(480px, 100%);
-  }
-  .settings summary {
-    cursor: pointer;
-    font-size: 0.82rem;
-    color: #706050;
-    letter-spacing: 0.1em;
-    list-style: none;
-    text-align: center;
-    padding: 6px 0;
-    user-select: none;
-  }
-  .settings summary::-webkit-details-marker { display: none; }
-  .settings summary::before { content: '[ '; }
-  .settings summary::after  { content: ' ]'; }
-
-  .settings-body {
     background: #110e1a;
     border: 1px solid #3a2a1a;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 20px;
-    margin-top: 10px;
   }
-  .settings-body label {
+  .playlist-form label {
     display: block;
     font-size: 0.8rem;
     color: #9a8a70;
     margin-bottom: 8px;
     letter-spacing: 0.05em;
   }
-  .settings-body input[type="text"] {
-    width: 100%;
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .playlist-form input[type="text"] {
+    flex: 1;
     padding: 9px 12px;
     border-radius: 6px;
     border: 1px solid #3a2a1a;
@@ -248,14 +226,14 @@
     color: #e0d8cc;
     font-size: 0.88rem;
     font-family: monospace;
+    min-width: 0;
   }
-  .settings-body input[type="text"]:focus {
+  .playlist-form input[type="text"]:focus {
     outline: none;
     border-color: #c89a50;
   }
   .save-btn {
-    margin-top: 12px;
-    padding: 8px 24px;
+    padding: 9px 18px;
     background: #c89a50;
     color: #1a1228;
     border: none;
@@ -264,17 +242,19 @@
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    letter-spacing: 0.05em;
+    white-space: nowrap;
     transition: opacity 0.2s;
+    flex-shrink: 0;
   }
   .save-btn:hover { opacity: 0.85; }
 
-  .saved-msg {
+  .status-msg {
     font-size: 0.8rem;
-    color: #80c870;
     margin-top: 8px;
-    display: none;
+    min-height: 1.2em;
   }
+  .status-msg.ok    { color: #80c870; }
+  .status-msg.ready { color: #9a8a70; }
 </style>
 </head>
 <body>
@@ -304,25 +284,19 @@
   <button class="ctrl-btn" id="play-btn" onclick="togglePlay()" title="再生 / 一時停止">&#9654;</button>
 </div>
 
-<div class="no-playlist" id="no-playlist">
-  下の「プレイリストを設定する」からURLを登録してください
-</div>
-
 <div class="player-wrap" id="player-wrap">
   <iframe id="yt-frame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
 </div>
 
-<details class="settings" id="settings-panel">
-  <summary>プレイリストを設定する</summary>
-  <div class="settings-body">
-    <label for="url-input">YouTube プレイリスト URL</label>
+<div class="playlist-form">
+  <label for="url-input">YouTube プレイリスト URL</label>
+  <div class="input-row">
     <input type="text" id="url-input"
       placeholder="https://www.youtube.com/playlist?list=XXXXXXXX">
-    <br>
     <button class="save-btn" onclick="saveUrl()">保存する</button>
-    <div class="saved-msg" id="saved-msg">保存しました</div>
   </div>
-</details>
+  <div class="status-msg" id="status-msg"></div>
+</div>
 
 <script>
   const STORAGE_KEY = 'minyou_playlist_url';
@@ -334,21 +308,25 @@
     return m ? m[1] : null;
   }
 
+  function setStatus(text, cls) {
+    const el = document.getElementById('status-msg');
+    el.textContent = text;
+    el.className = 'status-msg ' + cls;
+  }
+
   function togglePlay() {
     const listId = getListId();
-    const btn = document.getElementById('play-btn');
-    const wrap = document.getElementById('player-wrap');
-    const frame = document.getElementById('yt-frame');
-    const noMsg = document.getElementById('no-playlist');
-    const reelL = document.getElementById('reel-l');
-    const reelR = document.getElementById('reel-r');
+    const btn    = document.getElementById('play-btn');
+    const wrap   = document.getElementById('player-wrap');
+    const frame  = document.getElementById('yt-frame');
+    const reelL  = document.getElementById('reel-l');
+    const reelR  = document.getElementById('reel-r');
 
     if (!listId) {
-      noMsg.style.display = 'block';
-      document.getElementById('settings-panel').open = true;
+      setStatus('まずプレイリスト URL を入力して「保存する」を押してください', 'ready');
+      document.getElementById('url-input').focus();
       return;
     }
-    noMsg.style.display = 'none';
 
     if (!playing) {
       frame.src = 'https://www.youtube.com/embed/videoseries?list=' + listId + '&autoplay=1';
@@ -371,17 +349,18 @@
 
   function saveUrl() {
     const val = document.getElementById('url-input').value.trim();
-    if (!val) return;
+    if (!val) { setStatus('URL を入力してください', 'ready'); return; }
+    if (!val.includes('list=')) { setStatus('プレイリストの URL を貼り付けてください', 'ready'); return; }
     localStorage.setItem(STORAGE_KEY, val);
-    const msg = document.getElementById('saved-msg');
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 2000);
+    setStatus('保存しました。▶ で再生できます', 'ok');
   }
 
-  // 保存済みURLをフォームに反映
   window.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) document.getElementById('url-input').value = saved;
+    if (saved) {
+      document.getElementById('url-input').value = saved;
+      setStatus('▶ ボタンを押すと再生されます', 'ready');
+    }
   });
 </script>
 </body>
