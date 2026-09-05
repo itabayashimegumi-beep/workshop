@@ -4,16 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>民謡カセット</title>
-<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Klee One', 'Hiragino Kaku Gothic ProN', sans-serif;
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
     background: #fff;
     color: #2a1a10;
     min-height: 100svh;
     padding: 32px 16px 64px;
+    font-size: 18px;
   }
 
   /* ---- ヘッダー ---- */
@@ -22,14 +23,14 @@
     margin-bottom: 40px;
   }
   header h1 {
-    font-size: clamp(1.6rem, 5vw, 2.2rem);
-    font-weight: 600;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    font-weight: 700;
     color: #2a1a10;
     letter-spacing: 0.2em;
   }
   header p {
-    margin-top: 6px;
-    font-size: 0.82rem;
+    margin-top: 8px;
+    font-size: 1rem;
     color: #a08060;
     letter-spacing: 0.15em;
   }
@@ -89,8 +90,8 @@
   .cassette-label::after  { bottom: 0; }
 
   .label-text {
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: #2a1a10;
     text-align: center;
     line-height: 1.3;
@@ -165,8 +166,8 @@
 
   /* カードのタイトルと再生ボタン */
   .card-title {
-    font-size: 0.88rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #2a1a10;
     text-align: center;
     max-width: 180px;
@@ -182,12 +183,12 @@
   }
 
   .play-btn {
-    width: 40px; height: 40px;
+    width: 52px; height: 52px;
     border-radius: 50%;
-    border: 2px solid #c8853a;
+    border: 2.5px solid #c8853a;
     background: transparent;
     color: #c8853a;
-    font-size: 1rem;
+    font-size: 1.3rem;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
@@ -218,12 +219,12 @@
   }
 
   .add-toggle-btn {
-    padding: 10px 28px;
+    padding: 14px 36px;
     border: 2px dashed #c8a870;
     border-radius: 50px;
     background: transparent;
     color: #a07840;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-family: inherit;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
@@ -245,21 +246,22 @@
 
   .add-form label {
     display: block;
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #8a6040;
     margin-bottom: 5px;
     margin-top: 12px;
+    font-weight: 700;
   }
   .add-form label:first-of-type { margin-top: 0; }
 
   .add-form input[type="text"] {
     width: 100%;
-    padding: 9px 12px;
-    border: 1px solid #e0c898;
+    padding: 12px 14px;
+    border: 1.5px solid #e0c898;
     border-radius: 6px;
     background: #fff;
     color: #2a1a10;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-family: inherit;
   }
   .add-form input[type="text"]:focus {
@@ -274,32 +276,32 @@
   }
 
   .btn-primary {
-    padding: 9px 24px;
+    padding: 12px 28px;
     background: #c8853a;
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-family: inherit;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: opacity 0.2s;
   }
   .btn-primary:hover { opacity: 0.85; }
 
   .btn-cancel {
-    padding: 9px 20px;
+    padding: 12px 20px;
     background: transparent;
     color: #a08060;
     border: 1px solid #ddd;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     font-family: inherit;
     cursor: pointer;
   }
 
   .form-error {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: #c04040;
     margin-top: 8px;
     min-height: 1.2em;
@@ -321,18 +323,18 @@
     padding: 0 4px;
   }
   .player-header h2 {
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: #2a1a10;
     flex: 1;
   }
   .close-btn {
-    padding: 4px 14px;
+    padding: 8px 20px;
     border: 1px solid #ddd;
     background: transparent;
     color: #a08060;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-family: inherit;
     cursor: pointer;
   }
@@ -351,7 +353,7 @@
     grid-column: 1 / -1;
     text-align: center;
     color: #b0906a;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     padding: 32px 0;
   }
 </style>
