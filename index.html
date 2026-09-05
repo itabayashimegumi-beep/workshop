@@ -691,6 +691,35 @@ document.getElementById('d-url').addEventListener('keydown', e => { if (e.key ==
 document.getElementById('d-title').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('d-url').focus(); });
 document.getElementById('overlay').addEventListener('click', function(e) { if (e.target === this) closeDialog(); });
 
+// URL 入力でタイトルを自動取得
+let fetchTimer = null;
+document.getElementById('d-url').addEventListener('input', function() {
+  clearTimeout(fetchTimer);
+  const url = this.value.trim();
+  if (!url) return;
+  fetchTimer = setTimeout(() => autoFetchTitle(url), 700);
+});
+
+async function autoFetchTitle(url) {
+  const titleEl = document.getElementById('d-title');
+  const errEl   = document.getElementById('d-error');
+  if (titleEl.value.trim()) return; // 手入力済みなら上書きしない
+  errEl.textContent = 'タイトルを取得中...';
+  try {
+    const res = await fetch(
+      'https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json'
+    );
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    if (data.title) {
+      titleEl.value = data.title;
+      errEl.textContent = '';
+    }
+  } catch(e) {
+    errEl.textContent = 'タイトルを自動取得できませんでした。手入力してください。';
+  }
+}
+
 // ── 初期化 ──
 renderShelf();
 </script>
