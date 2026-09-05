@@ -2,526 +2,723 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>民謡カセット</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', sans-serif;
-    background: #fff;
-    color: #2a1a10;
-    min-height: 100svh;
-    padding: 32px 16px 64px;
-    font-size: 18px;
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
   }
 
-  /* ---- ヘッダー ---- */
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  header h1 {
-    font-size: clamp(2rem, 6vw, 2.8rem);
-    font-weight: 700;
-    color: #2a1a10;
-    letter-spacing: 0.2em;
-  }
-  header p {
-    margin-top: 8px;
-    font-size: 1rem;
-    color: #a08060;
-    letter-spacing: 0.15em;
+  /* 4:3 固定コンテナ */
+  .app {
+    --w: min(100vw, calc(100svh * 4 / 3), 1024px);
+    width: var(--w);
+    height: calc(var(--w) * 3 / 4);
+    display: flex;
+    background: #1a1a1a;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
   }
 
-  /* ---- カセットグリッド ---- */
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 32px 24px;
-    max-width: 900px;
-    margin: 0 auto 40px;
-  }
-
-  /* ---- カセットカード ---- */
-  .card {
+  /* =========================================
+     左：カセットプレイヤー
+  ========================================= */
+  .player-panel {
+    flex: 3;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 10px;
+    background: linear-gradient(180deg, #2e2e2e 0%, #1c1c1c 100%);
+    border-right: 3px solid #0a0a0a;
+    padding: clamp(8px, 1.5vw, 16px);
+    gap: clamp(6px, 1vw, 12px);
   }
-
-  .cassette-body {
-    width: 180px;
-    height: 110px;
-    background: linear-gradient(160deg, #3a2718 0%, #2a1a10 100%);
-    border-radius: 9px;
-    border: 1.5px solid #6a4a32;
-    position: relative;
-    box-shadow: 0 4px 16px rgba(80,40,10,0.15);
-    flex-shrink: 0;
-  }
-
-  /* ラベル */
-  .cassette-label {
-    position: absolute;
-    top: 8px; left: 11px; right: 11px;
-    height: 44px;
-    background: linear-gradient(135deg, #f5e8c0 0%, #e0cc88 100%);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: 4px 8px;
-  }
-  .cassette-label::before,
-  .cassette-label::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0;
-    height: 3px;
-    background: repeating-linear-gradient(
-      90deg, #b89a50 0, #b89a50 4px, transparent 4px, transparent 8px
-    );
-  }
-  .cassette-label::before { top: 0; }
-  .cassette-label::after  { bottom: 0; }
-
-  .label-text {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #2a1a10;
-    text-align: center;
-    line-height: 1.3;
-    max-width: 100%;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
-
-  /* リール部 */
-  .reel-area {
-    position: absolute;
-    bottom: 8px;
-    left: 0; right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-    gap: 0;
-  }
-
-  .reel {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 50% 50%, #888 0%, #555 18%, transparent 18%),
-      conic-gradient(#4a4a4a 0deg,#666 60deg,#4a4a4a 120deg,#666 180deg,#4a4a4a 240deg,#666 300deg,#4a4a4a 360deg);
-    border: 2px solid #777;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .reel::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(circle at 50% 50%, transparent 26%, rgba(0,0,0,0.3) 26%);
-  }
-  .reel.spinning { animation: spin 1.4s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .tape-window {
-    flex: 1;
-    max-width: 52px;
-    height: 20px;
-    background: #0e0a06;
-    border: 1.5px solid #555;
-    border-radius: 3px;
-    position: relative;
-    margin: 0 4px;
-  }
-  .tape-window::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: 0; right: 0;
-    height: 2px;
-    background: #7a4a20;
-    transform: translateY(-50%);
-  }
-
-  /* 切り欠き */
-  .notch {
-    position: absolute;
-    bottom: 0;
-    width: 12px; height: 12px;
-    background: #fff;
-    border-radius: 0 7px 0 0;
-  }
-  .notch.left  { left: 0; }
-  .notch.right { right: 0; border-radius: 7px 0 0 0; }
-
-  /* カードのタイトルと再生ボタン */
-  .card-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #2a1a10;
-    text-align: center;
-    max-width: 180px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .card-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .play-btn {
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    border: 2.5px solid #c8853a;
-    background: transparent;
-    color: #c8853a;
-    font-size: 1.3rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s, color 0.2s;
-    font-family: inherit;
-  }
-  .play-btn:hover { background: #c8853a; color: #fff; }
-  .play-btn.active { background: #c8853a; color: #fff; }
-
-  .del-btn {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 1.5px solid #ddd;
-    background: transparent;
-    color: #bbb;
-    font-size: 0.75rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: border-color 0.2s, color 0.2s;
-    font-family: inherit;
-  }
-  .del-btn:hover { border-color: #e06050; color: #e06050; }
-
-  /* ---- 追加ボタン ---- */
-  .add-wrap {
-    max-width: 900px;
-    margin: 0 auto 32px;
-    text-align: center;
-  }
-
-  .add-toggle-btn {
-    padding: 14px 36px;
-    border: 2px dashed #c8a870;
-    border-radius: 50px;
-    background: transparent;
-    color: #a07840;
-    font-size: 1.1rem;
-    font-family: inherit;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    letter-spacing: 0.05em;
-  }
-  .add-toggle-btn:hover { background: #fdf5e8; color: #7a5820; }
-
-  /* ---- 追加フォーム ---- */
-  .add-form {
-    max-width: 480px;
-    margin: 16px auto 0;
-    background: #fdf8f0;
-    border: 1px solid #e8d5b0;
-    border-radius: 12px;
-    padding: 20px;
-    display: none;
-  }
-  .add-form.open { display: block; }
-
-  .add-form label {
-    display: block;
-    font-size: 1rem;
-    color: #8a6040;
-    margin-bottom: 5px;
-    margin-top: 12px;
-    font-weight: 700;
-  }
-  .add-form label:first-of-type { margin-top: 0; }
-
-  .add-form input[type="text"] {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #e0c898;
-    border-radius: 6px;
-    background: #fff;
-    color: #2a1a10;
-    font-size: 1rem;
-    font-family: inherit;
-  }
-  .add-form input[type="text"]:focus {
-    outline: none;
-    border-color: #c8853a;
-  }
-
-  .form-btns {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-  }
-
-  .btn-primary {
-    padding: 12px 28px;
-    background: #c8853a;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.05rem;
-    font-family: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn-primary:hover { opacity: 0.85; }
-
-  .btn-cancel {
-    padding: 12px 20px;
-    background: transparent;
-    color: #a08060;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1.05rem;
-    font-family: inherit;
-    cursor: pointer;
-  }
-
-  .form-error {
-    font-size: 1rem;
-    color: #c04040;
-    margin-top: 8px;
-    min-height: 1.2em;
-  }
-
-  /* ---- プレイヤー ---- */
-  .player-section {
-    max-width: 720px;
-    margin: 0 auto;
-    display: none;
-  }
-  .player-section.visible { display: block; }
 
   .player-header {
+    text-align: center;
+    font-size: clamp(0.7rem, 1.4vw, 1rem);
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.25em;
+    flex-shrink: 0;
+  }
+
+  /* カセットスロット */
+  .slot-wrap {
+    flex-shrink: 0;
+    background: #0d0d0d;
+    border-radius: 8px;
+    border: 2px solid #3a3a3a;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.9);
+    padding: clamp(8px, 1.2vw, 14px);
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding: 0 4px;
+    justify-content: center;
+    min-height: clamp(80px, 13vw, 110px);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
   }
-  .player-header h2 {
-    font-size: 1.2rem;
+  .slot-wrap.drag-over {
+    border-color: #d4883a;
+    box-shadow: inset 0 4px 10px rgba(0,0,0,0.9), 0 0 0 2px #d4883a;
+  }
+
+  .slot-hint {
+    color: #444;
+    font-size: clamp(0.65rem, 1.2vw, 0.9rem);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  /* プレイヤー内カセット */
+  .slot-cassette {
+    width: 100%;
+    max-width: clamp(200px, 36vw, 360px);
+    height: clamp(56px, 9vw, 80px);
+    background: linear-gradient(160deg, #3a2718, #1e100a);
+    border-radius: 7px;
+    border: 1.5px solid #6a4a32;
+    position: relative;
+    flex-shrink: 0;
+    display: none;
+  }
+  .slot-cassette.loaded {
+    display: block;
+    animation: insertSlide 0.3s ease;
+  }
+  @keyframes insertSlide {
+    from { transform: translateY(-16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+
+  .slot-label {
+    position: absolute;
+    top: clamp(5px, 0.8vw, 9px);
+    left: clamp(10px, 1.5vw, 16px);
+    right: clamp(10px, 1.5vw, 16px);
+    height: clamp(22px, 3.5vw, 32px);
+    background: linear-gradient(135deg, #f5e8c0, #ddc880);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.6rem, 1.1vw, 0.85rem);
     font-weight: 700;
     color: #2a1a10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 8px;
+  }
+
+  .slot-reels {
+    position: absolute;
+    bottom: clamp(4px, 0.7vw, 7px);
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(12px, 2vw, 20px);
+  }
+  .slot-reel {
+    width: clamp(18px, 3vw, 28px);
+    height: clamp(18px, 3vw, 28px);
+    border-radius: 50%;
+    background: conic-gradient(#444 0deg,#666 60deg,#444 120deg,#666 180deg,#444 240deg,#666 300deg,#444 360deg);
+    border: 2px solid #666;
+    flex-shrink: 0;
+  }
+  .slot-reel.spin { animation: spin 1.2s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .slot-tape-win {
+    flex: 1; max-width: clamp(36px, 6vw, 60px);
+    height: clamp(10px, 1.6vw, 16px);
+    background: #080604; border: 1px solid #444; border-radius: 2px; margin: 0 4px;
+  }
+  .slot-notch {
+    position: absolute; bottom: 0;
+    width: clamp(8px, 1.2vw, 12px); height: clamp(8px, 1.2vw, 12px);
+    background: #0d0d0d;
+  }
+  .slot-notch.l { left: 0; border-radius: 0 5px 0 0; }
+  .slot-notch.r { right: 0; border-radius: 5px 0 0 0; }
+
+  /* 映像スクリーン */
+  .video-screen {
     flex: 1;
+    background: #000;
+    border-radius: 6px;
+    border: 2px solid #2a2a2a;
+    overflow: hidden;
+    position: relative;
   }
-  .close-btn {
-    padding: 8px 20px;
-    border: 1px solid #ddd;
-    background: transparent;
-    color: #a08060;
-    border-radius: 20px;
-    font-size: 1rem;
-    font-family: inherit;
+  #yt-player { width: 100%; height: 100%; }
+  #yt-player iframe { width: 100% !important; height: 100% !important; display: block; }
+
+  .screen-overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .screen-overlay.hidden { opacity: 0; }
+
+  /* トランスポートコントロール */
+  .transport {
+    display: flex;
+    gap: clamp(4px, 0.8vw, 10px);
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .t-btn {
+    height: clamp(38px, 6.5vw, 56px);
+    min-width: clamp(38px, 6.5vw, 56px);
+    padding: 0 clamp(8px, 1.4vw, 16px);
+    border-radius: 8px;
+    border: 1.5px solid #4a4a4a;
+    background: linear-gradient(180deg, #3c3c3c 0%, #252525 100%);
+    color: #d0c0a0;
+    font-size: clamp(0.9rem, 1.8vw, 1.4rem);
     cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    transition: background 0.15s, transform 0.1s;
+    font-family: inherit;
   }
-
-  .player-section iframe {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border: none;
-    border-radius: 10px;
-    display: block;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  .t-btn:hover { background: linear-gradient(180deg, #4a4a4a 0%, #333 100%); border-color: #666; }
+  .t-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+  .t-btn.on {
+    background: linear-gradient(180deg, #d4883a 0%, #a06020 100%);
+    border-color: #d4883a; color: #fff;
   }
-
-  /* 空メッセージ */
-  .empty-msg {
-    grid-column: 1 / -1;
+  .t-label {
+    font-size: clamp(0.5rem, 0.9vw, 0.7rem);
+    color: #666;
     text-align: center;
-    color: #b0906a;
-    font-size: 1.05rem;
-    padding: 32px 0;
+    letter-spacing: 0.05em;
+  }
+  .t-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+
+  /* =========================================
+     右：カセット棚
+  ========================================= */
+  .shelf-panel {
+    flex: 2;
+    background: linear-gradient(180deg, #3a220c 0%, #1e1006 100%);
+    display: flex;
+    flex-direction: column;
+    padding: clamp(8px, 1.2vw, 14px);
+    gap: clamp(6px, 1vw, 10px);
+  }
+
+  .shelf-header {
+    text-align: center;
+    font-size: clamp(0.7rem, 1.3vw, 0.95rem);
+    font-weight: 700;
+    color: #c8a060;
+    letter-spacing: 0.2em;
+    flex-shrink: 0;
+  }
+
+  .shelf-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(5px, 0.9vw, 9px);
+    padding-right: 2px;
+  }
+  .shelf-list::-webkit-scrollbar { width: 4px; }
+  .shelf-list::-webkit-scrollbar-thumb { background: #6a4a28; border-radius: 2px; }
+
+  /* 棚のカセット */
+  .shelf-item {
+    position: relative;
+    flex-shrink: 0;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .shelf-cassette {
+    width: 100%;
+    height: clamp(44px, 7vw, 62px);
+    background: linear-gradient(160deg, #3a2718, #1e100a);
+    border-radius: 6px;
+    border: 1.5px solid #6a4a32;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+  }
+  .shelf-item:hover .shelf-cassette { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.6); }
+  .shelf-item.dragging .shelf-cassette { opacity: 0.25; }
+  .shelf-item.in-player .shelf-cassette { border-color: #d4883a; opacity: 0.6; }
+
+  .shelf-cas-label {
+    position: absolute;
+    top: clamp(4px, 0.7vw, 7px);
+    left: clamp(8px, 1.3vw, 12px);
+    right: clamp(24px, 3.5vw, 36px);
+    height: clamp(16px, 2.6vw, 22px);
+    background: linear-gradient(135deg, #f5e8c0, #ddc880);
+    border-radius: 2px;
+    display: flex; align-items: center;
+    font-size: clamp(0.58rem, 1vw, 0.8rem);
+    font-weight: 700;
+    color: #2a1a10;
+    padding: 0 5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .shelf-reels {
+    position: absolute;
+    bottom: clamp(3px, 0.5vw, 5px);
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 clamp(8px, 1.3vw, 14px);
+  }
+  .shelf-reel {
+    width: clamp(13px, 2.2vw, 19px); height: clamp(13px, 2.2vw, 19px);
+    border-radius: 50%;
+    background: conic-gradient(#444 0deg,#666 60deg,#444 120deg,#666 180deg,#444 240deg,#666 300deg,#444 360deg);
+    border: 1.5px solid #666; flex-shrink: 0;
+  }
+  .shelf-tape-win {
+    flex: 1; max-width: clamp(28px, 4.5vw, 44px);
+    height: clamp(8px, 1.3vw, 12px);
+    background: #080604; border: 1px solid #444; border-radius: 2px; margin: 0 3px;
+  }
+
+  /* 削除ボタン */
+  .del-btn {
+    position: absolute;
+    top: clamp(3px, 0.5vw, 5px);
+    right: clamp(4px, 0.7vw, 7px);
+    width: clamp(18px, 2.8vw, 24px); height: clamp(18px, 2.8vw, 24px);
+    border-radius: 50%;
+    border: 1px solid #6a4a32;
+    background: rgba(0,0,0,0.5);
+    color: #888;
+    font-size: clamp(0.5rem, 0.9vw, 0.72rem);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .del-btn:hover { color: #e06050; border-color: #e06050; }
+
+  /* 追加ボタン */
+  .add-btn {
+    width: 100%;
+    padding: clamp(9px, 1.5vw, 14px);
+    border: 2px dashed #6a4a28;
+    border-radius: 8px;
+    background: transparent;
+    color: #a07040;
+    font-size: clamp(0.75rem, 1.3vw, 1rem);
+    font-family: inherit; font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .add-btn:hover { background: rgba(100,60,20,0.3); }
+
+  /* =========================================
+     ドラッグゴースト
+  ========================================= */
+  .ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 500;
+    width: 160px; height: 50px;
+    background: linear-gradient(160deg, #3a2718, #1e100a);
+    border-radius: 6px;
+    border: 1.5px solid #d4883a;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-3deg);
+  }
+  .ghost.show { display: flex; }
+  .ghost-label {
+    background: linear-gradient(135deg, #f5e8c0, #ddc880);
+    border-radius: 2px; padding: 2px 8px;
+    font-size: 0.75rem; font-weight: 700; color: #2a1a10;
+    max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* =========================================
+     追加ダイアログ
+  ========================================= */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .overlay.open { display: flex; }
+
+  .dialog {
+    background: #fff;
+    border-radius: 14px;
+    padding: clamp(20px, 3vw, 32px);
+    width: min(90vw, 420px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .dialog h2 { font-size: clamp(1.1rem, 2vw, 1.35rem); color: #2a1a10; margin-bottom: 18px; font-weight: 700; }
+  .dialog label { display: block; font-size: clamp(0.9rem, 1.5vw, 1rem); font-weight: 700; color: #5a3a20; margin-bottom: 6px; margin-top: 14px; }
+  .dialog label:first-of-type { margin-top: 0; }
+  .dialog input[type=text] {
+    width: 100%; padding: 11px 13px;
+    border: 1.5px solid #e0c898; border-radius: 8px;
+    font-size: clamp(0.9rem, 1.5vw, 1rem); font-family: inherit; color: #2a1a10; background: #fff;
+  }
+  .dialog input:focus { outline: none; border-color: #c8853a; }
+  .d-error { font-size: clamp(0.8rem, 1.3vw, 0.95rem); color: #c04040; margin-top: 8px; min-height: 1.2em; }
+  .d-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .d-ok {
+    flex: 1; padding: 13px;
+    background: #c8853a; color: #fff;
+    border: none; border-radius: 8px;
+    font-size: clamp(0.9rem, 1.5vw, 1.05rem); font-family: inherit; font-weight: 700; cursor: pointer;
+  }
+  .d-ok:hover { background: #a86020; }
+  .d-cancel {
+    padding: 13px 20px; background: transparent; color: #888;
+    border: 1px solid #ddd; border-radius: 8px;
+    font-size: clamp(0.9rem, 1.5vw, 1.05rem); font-family: inherit; cursor: pointer;
   }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>民謡カセット</h1>
-  <p>JAPANESE FOLK SONGS</p>
-</header>
+<div class="app">
 
-<div class="grid" id="cassette-grid"></div>
+  <!-- 左：プレイヤー -->
+  <div class="player-panel">
+    <div class="player-header">民 謡 プ レ イ ヤ ー</div>
 
-<div class="add-wrap">
-  <button class="add-toggle-btn" onclick="toggleForm()">＋ カセットを追加する</button>
-  <div class="add-form" id="add-form">
-    <label for="new-title">タイトル</label>
-    <input type="text" id="new-title" placeholder="例：津軽じょんがら節">
-    <label for="new-url">YouTube URL</label>
-    <input type="text" id="new-url" placeholder="https://youtu.be/XXXXX または playlist?list=XXXXX">
-    <div class="form-error" id="form-error"></div>
-    <div class="form-btns">
-      <button class="btn-primary" onclick="addCassette()">追加する</button>
-      <button class="btn-cancel" onclick="toggleForm()">キャンセル</button>
+    <!-- カセットスロット -->
+    <div class="slot-wrap" id="drop-zone">
+      <div class="slot-hint" id="slot-hint">カセットをここにドロップ</div>
+      <div class="slot-cassette" id="slot-cassette">
+        <div class="slot-label" id="slot-label"></div>
+        <div class="slot-reels">
+          <div class="slot-reel" id="reel-l"></div>
+          <div class="slot-tape-win"></div>
+          <div class="slot-reel" id="reel-r"></div>
+        </div>
+        <div class="slot-notch l"></div>
+        <div class="slot-notch r"></div>
+      </div>
+    </div>
+
+    <!-- 映像 -->
+    <div class="video-screen">
+      <div id="yt-player"></div>
+      <div class="screen-overlay" id="screen-overlay">カセットをセットしてください</div>
+    </div>
+
+    <!-- コントロール -->
+    <div class="transport">
+      <div class="t-item">
+        <button class="t-btn" id="btn-rw"  onclick="doRW()">⏮</button>
+        <div class="t-label">巻き戻し</div>
+      </div>
+      <div class="t-item">
+        <button class="t-btn" id="btn-stop" onclick="doStop()">⏹</button>
+        <div class="t-label">停止</div>
+      </div>
+      <div class="t-item">
+        <button class="t-btn" id="btn-play" onclick="doPlay()">▶</button>
+        <div class="t-label">再生 / 一時停止</div>
+      </div>
+      <div class="t-item">
+        <button class="t-btn" id="btn-ff"  onclick="doFF()">⏭</button>
+        <div class="t-label">早送り</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 右：カセット棚 -->
+  <div class="shelf-panel">
+    <div class="shelf-header">カ セ ッ ト 一 覧</div>
+    <div class="shelf-list" id="shelf-list"></div>
+    <button class="add-btn" onclick="openDialog()">＋ カセットを追加する</button>
+  </div>
+
+</div>
+
+<!-- ドラッグゴースト -->
+<div class="ghost" id="ghost"><div class="ghost-label" id="ghost-label"></div></div>
+
+<!-- 追加ダイアログ -->
+<div class="overlay" id="overlay">
+  <div class="dialog">
+    <h2>カセットを追加する</h2>
+    <label for="d-title">タイトル</label>
+    <input type="text" id="d-title" placeholder="例：津軽じょんがら節">
+    <label for="d-url">YouTube URL</label>
+    <input type="text" id="d-url" placeholder="https://youtu.be/XXXXX">
+    <div class="d-error" id="d-error"></div>
+    <div class="d-btns">
+      <button class="d-ok" onclick="addCassette()">追加する</button>
+      <button class="d-cancel" onclick="closeDialog()">キャンセル</button>
     </div>
   </div>
 </div>
 
-<div class="player-section" id="player-section">
-  <div class="player-header">
-    <h2 id="player-title"></h2>
-    <button class="close-btn" onclick="stopPlay()">閉じる</button>
-  </div>
-  <iframe id="yt-frame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-</div>
-
 <script>
-  const STORAGE_KEY = 'minyou_cassettes_v2';
+// ---- データ管理 ----
+const KEY = 'minyou_v4';
 
-  function load() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || [
-      { id: 1, title: '民謡', url: 'https://youtu.be/E_Fhr2FRjHM?si=V8TXJbjHAjqmdjxi' }
-    ];
-  }
+function loadList() {
+  return JSON.parse(localStorage.getItem(KEY) || 'null') || [
+    { id: 1, title: '民謡', url: 'https://youtu.be/E_Fhr2FRjHM?si=V8TXJbjHAjqmdjxi' }
+  ];
+}
+function saveList(list) { localStorage.setItem(KEY, JSON.stringify(list)); }
 
-  function save(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  }
+function parseUrl(raw) {
+  const listM = raw.match(/[?&]list=([^&\s]+)/);
+  if (listM) return { type: 'playlist', id: listM[1] };
+  const shortM = raw.match(/youtu\.be\/([^?&\s]+)/);
+  if (shortM) return { type: 'video', id: shortM[1] };
+  const watchM = raw.match(/[?&]v=([^&\s]+)/);
+  if (watchM) return { type: 'video', id: watchM[1] };
+  return null;
+}
 
-  function embedSrc(raw) {
-    const listM = raw.match(/[?&]list=([^&\s]+)/);
-    if (listM) return 'https://www.youtube.com/embed/videoseries?list=' + listM[1] + '&autoplay=1';
-    const shortM = raw.match(/youtu\.be\/([^?&\s]+)/);
-    if (shortM) return 'https://www.youtube.com/embed/' + shortM[1] + '?autoplay=1';
-    const watchM = raw.match(/[?&]v=([^&\s]+)/);
-    if (watchM) return 'https://www.youtube.com/embed/' + watchM[1] + '?autoplay=1';
-    return null;
-  }
+function esc(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
 
-  let currentId = null;
+// ---- YouTube API ----
+var ytPlayer = null, ytReady = false;
 
-  function render() {
-    const list = load();
-    const grid = document.getElementById('cassette-grid');
-    grid.innerHTML = '';
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(s);
+})();
 
-    if (list.length === 0) {
-      grid.innerHTML = '<div class="empty-msg">カセットがまだありません。下の「追加する」から登録してください。</div>';
-      return;
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '100%', width: '100%',
+    playerVars: { enablejsapi: 1, controls: 1, rel: 0, modestbranding: 1 },
+    events: {
+      onReady: function() { ytReady = true; },
+      onStateChange: function(e) { syncPlayBtn(e.data); }
     }
+  });
+};
 
-    list.forEach(item => {
-      const isActive = item.id === currentId;
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="cassette-body">
-          <div class="cassette-label">
-            <div class="label-text">${esc(item.title)}</div>
-          </div>
-          <div class="reel-area">
-            <div class="reel${isActive ? ' spinning' : ''}" id="reel-l-${item.id}"></div>
-            <div class="tape-window"></div>
-            <div class="reel${isActive ? ' spinning' : ''}" id="reel-r-${item.id}"></div>
-          </div>
-          <div class="notch left"></div>
-          <div class="notch right"></div>
+function syncPlayBtn(state) {
+  const playing = (state === 1);
+  document.getElementById('btn-play').textContent = playing ? '⏸' : '▶';
+  document.getElementById('btn-play').classList.toggle('on', playing);
+  document.getElementById('reel-l').classList.toggle('spin', playing);
+  document.getElementById('reel-r').classList.toggle('spin', playing);
+}
+
+function doPlay() {
+  if (!ytReady || !loadedItem) return;
+  const s = ytPlayer.getPlayerState();
+  if (s === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo();
+}
+
+function doStop() {
+  if (!ytReady) return;
+  ytPlayer.stopVideo();
+  syncPlayBtn(2);
+}
+
+function doRW() {
+  if (!ytReady) return;
+  ytPlayer.seekTo(Math.max(0, ytPlayer.getCurrentTime() - 15), true);
+}
+
+function doFF() {
+  if (!ytReady) return;
+  ytPlayer.seekTo(ytPlayer.getCurrentTime() + 15, true);
+}
+
+// ---- セット済みカセット ----
+var loadedItem = null;
+
+function setCassette(item) {
+  loadedItem = item;
+
+  // スロット表示
+  const hint = document.getElementById('slot-hint');
+  const cas  = document.getElementById('slot-cassette');
+  hint.style.display = 'none';
+  document.getElementById('slot-label').textContent = item.title;
+  cas.classList.remove('loaded');
+  void cas.offsetWidth; // reflow で animation リセット
+  cas.classList.add('loaded');
+
+  // スクリーンオーバーレイ非表示
+  document.getElementById('screen-overlay').classList.add('hidden');
+
+  // 再生開始
+  if (ytReady) {
+    const p = parseUrl(item.url);
+    if (p) {
+      if (p.type === 'playlist') ytPlayer.loadPlaylist({ list: p.id, listType: 'playlist' });
+      else ytPlayer.loadVideoById(p.id);
+    }
+  }
+
+  // 棚の表示更新（再生中カセットをハイライト）
+  renderShelf();
+}
+
+// ---- 棚レンダリング ----
+function renderShelf() {
+  const list = loadList();
+  const el = document.getElementById('shelf-list');
+  el.innerHTML = '';
+  list.forEach(item => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'shelf-item' + (loadedItem && loadedItem.id === item.id ? ' in-player' : '');
+    wrapper.innerHTML = `
+      <div class="shelf-cassette">
+        <div class="shelf-cas-label">${esc(item.title)}</div>
+        <div class="shelf-reels">
+          <div class="shelf-reel"></div>
+          <div class="shelf-tape-win"></div>
+          <div class="shelf-reel"></div>
         </div>
-        <div class="card-title">${esc(item.title)}</div>
-        <div class="card-actions">
-          <button class="play-btn${isActive ? ' active' : ''}" onclick="togglePlay(${item.id})" title="再生 / 停止">
-            ${isActive ? '&#9646;&#9646;' : '&#9654;'}
-          </button>
-          <button class="del-btn" onclick="deleteCassette(${item.id})" title="削除">✕</button>
-        </div>
-      `;
-      grid.appendChild(card);
+      </div>
+      <button class="del-btn" title="削除">✕</button>
+    `;
+    wrapper.querySelector('.del-btn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      deleteCassette(item.id);
     });
+    addDrag(wrapper, item);
+    el.appendChild(wrapper);
+  });
+}
+
+function deleteCassette(id) {
+  if (!confirm('このカセットを削除しますか？')) return;
+  if (loadedItem && loadedItem.id === id) {
+    loadedItem = null;
+    doStop();
+    document.getElementById('slot-hint').style.display = '';
+    document.getElementById('slot-cassette').classList.remove('loaded');
+    document.getElementById('screen-overlay').classList.remove('hidden');
   }
+  saveList(loadList().filter(c => c.id !== id));
+  renderShelf();
+}
 
-  function esc(str) {
-    return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
+// ---- ドラッグ＆ドロップ（マウス＋タッチ両対応）----
+var dragData = null;
+var ghost = document.getElementById('ghost');
+var ghostLabel = document.getElementById('ghost-label');
+var dropZone = document.getElementById('drop-zone');
 
-  function togglePlay(id) {
-    if (currentId === id) { stopPlay(); return; }
+function addDrag(el, item) {
+  el.addEventListener('pointerdown', function(e) {
+    if (e.target.classList.contains('del-btn')) return;
+    e.preventDefault();
+    dragData = item;
+    el.setPointerCapture(e.pointerId);
+    el.classList.add('dragging');
+    ghostLabel.textContent = item.title;
+    ghost.classList.add('show');
+    moveGhost(e.clientX, e.clientY);
+  });
 
-    const list = load();
-    const item = list.find(c => c.id === id);
-    if (!item) return;
+  el.addEventListener('pointermove', function(e) {
+    if (!dragData) return;
+    moveGhost(e.clientX, e.clientY);
+    dropZone.classList.toggle('drag-over', isOverDrop(e.clientX, e.clientY));
+  });
 
-    const src = embedSrc(item.url);
-    if (!src) return;
+  el.addEventListener('pointerup', function(e) {
+    if (!dragData) return;
+    if (isOverDrop(e.clientX, e.clientY)) setCassette(dragData);
+    endDrag(el);
+  });
 
-    currentId = id;
-    document.getElementById('yt-frame').src = src;
-    document.getElementById('player-title').textContent = item.title;
-    document.getElementById('player-section').classList.add('visible');
-    document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    render();
-  }
+  el.addEventListener('pointercancel', function() { endDrag(el); });
+}
 
-  function stopPlay() {
-    currentId = null;
-    document.getElementById('yt-frame').src = '';
-    document.getElementById('player-section').classList.remove('visible');
-    render();
-  }
+function endDrag(el) {
+  el.classList.remove('dragging');
+  dropZone.classList.remove('drag-over');
+  ghost.classList.remove('show');
+  dragData = null;
+}
 
-  function deleteCassette(id) {
-    if (!confirm('このカセットを削除しますか？')) return;
-    if (currentId === id) stopPlay();
-    const list = load().filter(c => c.id !== id);
-    save(list);
-    render();
-  }
+function moveGhost(x, y) {
+  ghost.style.left = (x - 80) + 'px';
+  ghost.style.top  = (y - 25) + 'px';
+}
 
-  function toggleForm() {
-    const form = document.getElementById('add-form');
-    form.classList.toggle('open');
-    document.getElementById('form-error').textContent = '';
-    if (form.classList.contains('open')) {
-      document.getElementById('new-title').focus();
-    }
-  }
+function isOverDrop(x, y) {
+  const r = dropZone.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
 
-  function addCassette() {
-    const title = document.getElementById('new-title').value.trim();
-    const url   = document.getElementById('new-url').value.trim();
-    const errEl = document.getElementById('form-error');
+// ---- ダイアログ ----
+function openDialog() {
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('d-title').focus(), 50);
+}
+function closeDialog() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('d-title').value = '';
+  document.getElementById('d-url').value = '';
+  document.getElementById('d-error').textContent = '';
+}
 
-    if (!title) { errEl.textContent = 'タイトルを入力してください'; return; }
-    if (!url)   { errEl.textContent = 'URLを入力してください'; return; }
-    if (!embedSrc(url)) { errEl.textContent = '有効なYouTube URLを入力してください'; return; }
+function addCassette() {
+  const title = document.getElementById('d-title').value.trim();
+  const url   = document.getElementById('d-url').value.trim();
+  const err   = document.getElementById('d-error');
+  if (!title)        { err.textContent = 'タイトルを入力してください'; return; }
+  if (!parseUrl(url)){ err.textContent = '有効なYouTube URLを入力してください'; return; }
+  const list = loadList();
+  if (list.length >= 10) { err.textContent = 'カセットは10個までです'; return; }
+  list.push({ id: Date.now(), title, url });
+  saveList(list);
+  closeDialog();
+  renderShelf();
+}
 
-    const list = load();
-    const newId = Date.now();
-    list.push({ id: newId, title, url });
-    save(list);
+// Enterキーでフォーム送信
+document.getElementById('d-url').addEventListener('keydown', e => { if (e.key === 'Enter') addCassette(); });
+document.getElementById('d-title').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('d-url').focus(); });
 
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-url').value = '';
-    errEl.textContent = '';
-    document.getElementById('add-form').classList.remove('open');
-    render();
-  }
+// オーバーレイ外クリックで閉じる
+document.getElementById('overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDialog();
+});
 
-  render();
+// ---- 初期化 ----
+renderShelf();
 </script>
 </body>
 </html>
