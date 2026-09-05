@@ -299,13 +299,22 @@
 </div>
 
 <script>
-  const STORAGE_KEY = 'minyou_playlist_url';
+  const STORAGE_KEY = 'minyou_url';
+  const DEFAULT_URL = 'https://youtu.be/E_Fhr2FRjHM?si=V8TXJbjHAjqmdjxi';
   let playing = false;
 
-  function getListId() {
-    const raw = localStorage.getItem(STORAGE_KEY) || '';
-    const m = raw.match(/[?&]list=([^&\s]+)/);
-    return m ? m[1] : null;
+  function getEmbedSrc(raw) {
+    if (!raw) return null;
+    // プレイリスト: ?list=XXXX
+    const listM = raw.match(/[?&]list=([^&\s]+)/);
+    if (listM) return 'https://www.youtube.com/embed/videoseries?list=' + listM[1] + '&autoplay=1';
+    // youtu.be/VIDEO_ID
+    const shortM = raw.match(/youtu\.be\/([^?&\s]+)/);
+    if (shortM) return 'https://www.youtube.com/embed/' + shortM[1] + '?autoplay=1';
+    // youtube.com/watch?v=VIDEO_ID
+    const watchM = raw.match(/[?&]v=([^&\s]+)/);
+    if (watchM) return 'https://www.youtube.com/embed/' + watchM[1] + '?autoplay=1';
+    return null;
   }
 
   function setStatus(text, cls) {
@@ -315,21 +324,22 @@
   }
 
   function togglePlay() {
-    const listId = getListId();
-    const btn    = document.getElementById('play-btn');
-    const wrap   = document.getElementById('player-wrap');
-    const frame  = document.getElementById('yt-frame');
-    const reelL  = document.getElementById('reel-l');
-    const reelR  = document.getElementById('reel-r');
+    const raw  = localStorage.getItem(STORAGE_KEY) || DEFAULT_URL;
+    const src  = getEmbedSrc(raw);
+    const btn   = document.getElementById('play-btn');
+    const wrap  = document.getElementById('player-wrap');
+    const frame = document.getElementById('yt-frame');
+    const reelL = document.getElementById('reel-l');
+    const reelR = document.getElementById('reel-r');
 
-    if (!listId) {
-      setStatus('まずプレイリスト URL を入力して「保存する」を押してください', 'ready');
+    if (!src) {
+      setStatus('有効な YouTube URL を入力して「保存する」を押してください', 'ready');
       document.getElementById('url-input').focus();
       return;
     }
 
     if (!playing) {
-      frame.src = 'https://www.youtube.com/embed/videoseries?list=' + listId + '&autoplay=1';
+      frame.src = src;
       wrap.classList.add('visible');
       btn.innerHTML = '&#9646;&#9646;';
       btn.classList.add('playing');
@@ -350,17 +360,15 @@
   function saveUrl() {
     const val = document.getElementById('url-input').value.trim();
     if (!val) { setStatus('URL を入力してください', 'ready'); return; }
-    if (!val.includes('list=')) { setStatus('プレイリストの URL を貼り付けてください', 'ready'); return; }
+    if (!getEmbedSrc(val)) { setStatus('有効な YouTube URL を貼り付けてください', 'ready'); return; }
     localStorage.setItem(STORAGE_KEY, val);
     setStatus('保存しました。▶ で再生できます', 'ok');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      document.getElementById('url-input').value = saved;
-      setStatus('▶ ボタンを押すと再生されます', 'ready');
-    }
+    const saved = localStorage.getItem(STORAGE_KEY) || DEFAULT_URL;
+    document.getElementById('url-input').value = saved;
+    setStatus('▶ ボタンを押すと再生されます', 'ready');
   });
 </script>
 </body>
